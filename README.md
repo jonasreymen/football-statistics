@@ -12,14 +12,19 @@ Hoe evolueren de technische en tactische prestaties van voetballers gedurende ee
 ### Player Comparison List
 - Pagebuilder: [app/gui/widgets/comparison_statistic_page.py](app/gui/widgets/comparison_statistic_page.py)
 
-### Player Comparison
-- Pagebuilder: [app/gui/widgets/comparison_statistic_detail_page.py](app/gui/widgets/comparison_statistic_detail_page.py)
-
 ### Player Comparison Generation
 - Pagebuilder: [app/gui/widgets/comparison_entry_page.py](app/gui/widgets/comparison_entry_page.py)
 
 ### General Statistics
 - Pagebuilder: [app/gui/widgets/general_statistic_page.py](app/gui/widgets/general_statistic_page.py)
+
+### Player Comparison
+- Pagebuilder: [app/gui/widgets/comparison_statistic_detail_page.py](app/gui/widgets/comparison_statistic_detail_page.py)
+
+## Data visualisation and dataframe generation
+- Main data frame: app/utils/statistics_data_provider.py
+- player comparison statistics (player vs player): [app/gui/widgets/squad_player_comparison_statistics_frame.py](app/gui/widgets/squad_player_comparison_statistics_frame.py)
+- General statistics: [app/gui/widgets/general_statistics_frame.py](app/gui/widgets/general_statistics_frame.py)
 
 ## Synchronisation
 
