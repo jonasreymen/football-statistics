@@ -10,7 +10,7 @@ from ttkbootstrap.scrolled import ScrolledFrame
 
 class SquadPlayerComparisonStatisticsFrame(ScrolledFrame):
     def __init__(self, parent: ttk.Frame, data_provider: StatisticsDataProvider, comparison: SquadPlayerComparison) -> None:
-        super().__init__(parent, height=800, padding=50)
+        super().__init__(parent, height=1000, padding=50)
         self.data_provider: StatisticsDataProvider = data_provider
         
         self.grid_columnconfigure(0, weight=1)
@@ -174,7 +174,7 @@ class SquadPlayerComparisonStatisticsFrame(ScrolledFrame):
         )
         
     def build_figure(self, df: DataFrame, field: str, title, field_name: str) -> plt.Figure:
-        fig, ax = plt.subplots(figsize=(3, 5))
+        fig, ax = plt.subplots(figsize=(3, 4))
 
         for name, group in df.groupby("name"):
             ax.plot(group["block"], group[field], marker="o", label=name)

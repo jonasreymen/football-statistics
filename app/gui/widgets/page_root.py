@@ -4,7 +4,7 @@ class PageRoot(ttk.Window):
     def __init__(self) -> None:
         super().__init__(themename="darkly")
         
-        self.minsize(width=1000, height=1000)
+        self.minsize(width=2000, height=1000)
 
         self.title("Football statistics")
         

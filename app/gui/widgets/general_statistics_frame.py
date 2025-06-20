@@ -1,4 +1,8 @@
+from sqlite3 import Row
+from cycler import V
 from pandas import DataFrame
+from pyparsing import col
+from sqlalchemy import column
 import ttkbootstrap as ttk
 from app.gui.widgets.auto_resizing_canvas import AutoResizingCanvas
 from app.utils.statistics_data_provider import StatisticsDataProvider
@@ -16,6 +20,21 @@ class GeneralStatisticsFrame(ScrolledFrame):
             "occasional": "blue",
             "regular": "orange"
         }
+        self.type_map = {
+            "Goals / 90": self.build_goals_per_90_frame,
+            "Shots / 90": self.build_shots_per_90_frame,
+            "Shots on / 90": self.build_shots_on_frame,
+            "Shots on success %": self.build_shots_on_pc_frame,
+            "Dribbles success %": self.build_dribbles_success_frame,
+            "Duels won success %": self.build_duels_won_pc_frame,
+            "Passes success %": self.build_passes_success_frame
+        }
+        
+        self.role_group_map = {
+                "Attacker": "att",
+                "Midfielder": "mid",
+                "Defender": "def"
+            }
         
         self.grid_columnconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
@@ -23,40 +42,49 @@ class GeneralStatisticsFrame(ScrolledFrame):
         self.build()
     
     def build(self) -> None:
-        df = self.data_provider.get_player_stats()
+        filter_frame = self.build_filter_frame(self, self.data_provider.get_player_stats())
         
-        tabControl = ttk.Notebook(self)
+        filter_frame.pack(expand=ttk.YES, fill=ttk.BOTH)
+    
+    def build_filter_frame(self, parent: ttk.Frame, df: DataFrame):
+        frame = ttk.Frame(parent)
+        filter_statistics_frame = ttk.Frame(frame, bootstyle="secondary", padding=20)
+        statistics_frame = ttk.Frame(frame)
         
-        goals = self.build_goals_per_90_frame(df, tabControl)
-        goals.pack(fill=ttk.X, expand=ttk.YES)
+        filter_statistics_frame.grid(column=0, row=0, sticky="ew")
+        statistics_frame.grid(column=0, row=1, sticky="nsew")
         
-        shots_per_90 = self.build_shots_per_90_frame(df, tabControl)
-        shots_per_90.pack(fill=ttk.X, expand=ttk.YES)
+        type_string = ttk.StringVar()
+        type_filter = ttk.Combobox(filter_statistics_frame, width = 27, textvariable = type_string)
+        type_filter["values"] = list(self.type_map.keys())
+        type_filter.current(0)
+        type_filter.grid(column=1, row=0, padx=10)
         
-        shots_on = self.build_shots_on_frame(df, tabControl)
-        shots_on.pack(fill=ttk.X, expand=ttk.YES)
+        role_group_string = ttk.StringVar()
+        role_group_string = ttk.Combobox(filter_statistics_frame, width = 27, textvariable = role_group_string)
+        role_group_string["values"] = list(self.role_group_map.keys())
+        role_group_string.current(0)
+        role_group_string.grid(column=2, row=0, padx=10)
         
-        shots_on_pc = self.build_shots_on_pc_frame(df, tabControl)
-        shots_on_pc.pack(fill=ttk.X, expand=ttk.YES)
+        button = ttk.Button(filter_statistics_frame, text = 'filter', command = lambda: self.filter_statistics(statistics_frame, df, type_string, role_group_string))
+        button.grid(column=3, row=0, pady=10)
         
-        dribbles = self.build_dribbles_success_frame(df, tabControl)
-        dribbles.pack(fill=ttk.X, expand=ttk.YES)
+        filter_statistics_frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_rowconfigure(0, weight=0)
+        frame.grid_rowconfigure(1, weight=1)
         
-        duels = self.build_duels_won_pc_frame(df, tabControl)
-        duels.pack(fill=ttk.X, expand=ttk.YES)
+        return frame
+    
+    def filter_statistics(self, parent: ttk.Frame, df: DataFrame, type_string: ttk.StringVar, role_group_string: ttk.StringVar):
+        for widget in parent.winfo_children():
+            widget.destroy()
         
-        passes = self.build_passes_success_frame(df, tabControl)
-        passes.pack(fill=ttk.X, expand=ttk.YES)
+        filtered_df = df[df["role_group"] == self.role_group_map[role_group_string.get()]].reset_index()
         
-        tabControl.add(goals, text="Goals / 90")
-        tabControl.add(shots_per_90, text="Shots / 90")
-        tabControl.add(shots_on, text="Shots on / 90")
-        tabControl.add(shots_on_pc, text="Shots on success %")
-        tabControl.add(dribbles, text="Dribbles success %")
-        tabControl.add(duels, text="Duels won success %")
-        tabControl.add(passes, text="Passes success %")
-
-        tabControl.pack(expand=ttk.YES, fill=ttk.BOTH)
+        statistics_frame = self.type_map[type_string.get()](filtered_df, parent)
+        
+        statistics_frame.pack(expand=ttk.YES, fill=ttk.BOTH)
     
     def build_goals_per_90_frame(self, df: DataFrame, parent) -> ttk.Frame:
         goals_90_growth_frame = self.get_goals_per_90_growth_figures(df)
@@ -347,7 +375,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         x="fixture_date",
         hue="type_player"
     ) -> ttk.Canvas:
-        figure = plt.figure(figsize=(5, 3), dpi=100)
+        figure = plt.figure(figsize=(4, 3), dpi=100)
         
         sns.lineplot(
             data=df,
@@ -389,7 +417,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
             hue="type_player",
             col="role_group",
             height=3,
-            aspect=1,
+            aspect=1.33,
             scatter_kws={"s": 10, "alpha": 0.5},
             ci=None,
             palette=self.colors,
