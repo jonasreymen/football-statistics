@@ -24,6 +24,8 @@ class SyncPage(Page):
         text_output = ttk.Text(frame, wrap='word', height=10, width=50)
         text_output.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
         
+        # TODO add sync enablers from db fields competition_season and club fields: is_sync_enabled (checkboxes or search field or both)
+        
         frame.grid_rowconfigure(1, weight=1)
         frame.grid_columnconfigure(0, weight=1)
         
