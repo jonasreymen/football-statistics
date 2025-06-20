@@ -92,16 +92,13 @@ class GeneralStatisticsFrame(ScrolledFrame):
         
         return self.build_matching_frame_blocks(parent, goals_90_growth_frame, cumulative_goals_per_90_frame)
     
-    def build_matching_frame_blocks(self, parent, mapped_growth_figures, mapped_linregr_figures):
-        roles = mapped_growth_figures.keys() | mapped_linregr_figures.keys()
-        
+    def build_matching_frame_blocks(self, parent, mapped_growth_figures, mapped_linregr_figures):        
         frame = ttk.Frame(parent)
-        for i,role in enumerate(roles):
-            canvas_wrapper = AutoResizingCanvas(frame, mapped_growth_figures[role])
-            canvas_wrapper.grid(row=i, column=0, sticky="nsew", pady=20, padx=20)
-            
-            canvas_wrapper = AutoResizingCanvas(frame, mapped_linregr_figures[role])
-            canvas_wrapper.grid(row=i, column=1, sticky="nsew", pady=20, padx=20)
+        canvas_wrapper = AutoResizingCanvas(frame, mapped_growth_figures)
+        canvas_wrapper.grid(row=0, column=0, sticky="nsew", pady=20, padx=20)
+        
+        canvas_wrapper = AutoResizingCanvas(frame, mapped_linregr_figures)
+        canvas_wrapper.grid(row=0, column=1, sticky="nsew", pady=20, padx=20)
         
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_columnconfigure(1, weight=1)
@@ -160,7 +157,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_gpm"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_gpm"])
         
-        return self.build_role_line_graphs(filtered_df, "rolling_gpm", "Rolling goals / 90")
+        return self.build_line_graph(filtered_df, "rolling_gpm", "Goals / 90", "Rolling goals / 90")
     
     def get_shots_per_90_growth_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -175,7 +172,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_shots_per_90"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_shots_per_90"])
         
-        return self.build_role_line_graphs(filtered_df, "rolling_shots_per_90", "Rolling shots / 90")
+        return self.build_line_graph(filtered_df, "rolling_shots_per_90", "Shots / 90", "Rolling shots / 90")
     
     def get_cumulative_shots_on_pc_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -187,7 +184,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_shots_total'] = grouped_df['shots.total'].cumsum()
         df_copy['cumulative_shots_on_percentage'] = (df_copy['cumulative_shots_on'] / df_copy['cumulative_shots_total'])*100
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_shots_on_percentage", "Cumulative Shots on %")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_shots_on_percentage", "Shots on %", "Cumulative Shots on %")
     
     def get_cumulative_passes_success_pc_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -198,7 +195,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_passes_accuracy_percentage'] = (df_copy['cumulative_passes_accuracy'] / df_copy['cumulative_passes'])*100
         df_copy['match_index'] = grouped_df.cumcount()
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_passes_accuracy_percentage", "Passes success %")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_passes_accuracy_percentage", "Passes success %", "Cumulative Passes success %")
     
     def get_cumulative_dribbles_success_pc_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -210,7 +207,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_dribbles_success_percentage'] = (df_copy['cumulative_dribbles_success'] / df_copy['cumulative_passes_attempts'])*100
         df_copy['match_index'] = grouped_df.cumcount()
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_dribbles_success_percentage", "Cumulative dribbles success %")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_dribbles_success_percentage", "Dribbles success %", "Cumulative dribbles success %")
     
     def get_cumulative_duels_won_pc_figures(self, df: DataFrame) -> ttk.Frame:
         df_copy = df.copy()
@@ -222,7 +219,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_duels_success_percentage'] = (df_copy['cumulative_duels_success'] / df_copy['cumulative_duels'])*100
         df_copy['match_index'] = grouped_df.cumcount()
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_duels_success_percentage", "Cumulative duels won %")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_duels_success_percentage", "Duels won %", "Cumulative duels won %")
 
     def get_cumulative_goals_per_90_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -237,7 +234,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_goals_per_90'] = df_copy['cumulative_goals_per_1']*90
         df_copy['match_index'] = grouped_df.cumcount()
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_goals_per_90", "Cumulative goals / 90")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_goals_per_90", "Goals / 90", "Cumulative goals / 90")
 
     def get_cumulative_shots_per_90_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -250,7 +247,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_shots_per_90'] = df_copy['cumulative_shots_per_1']*90
         df_copy['match_index'] = grouped_df.cumcount()
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_shots_per_90", "Cumulative shots / 90")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_shots_per_90", "Shots / 90", "Cumulative shots / 90")
     
     def get_cumulative_shots_on_per_90_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -263,7 +260,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['cumulative_shots_on_per_90'] = df_copy['cumulative_shots_on_per_1']*90
         df_copy['match_index'] = grouped_df.cumcount()
         
-        return self.build_role_lineair_regress_graphs(df_copy, "cumulative_shots_on_per_90", "Cumulative shots on / 90")
+        return self.build_lineair_regress_graph(df_copy, "cumulative_shots_on_per_90", "Shots on / 90", "Cumulative shots on / 90")
     
     def get_shots_on_pc_growth_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -279,7 +276,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_shots_on_pc"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_shots_on_pc"])
-        return self.build_role_line_graphs(filtered_df, "rolling_shots_on_pc", "Rolling shots on %")
+        return self.build_line_graph(filtered_df, "rolling_shots_on_pc", "Shots on %", "Rolling shots on %")
 
     def get_shots_on_per_90_growth_figures(self, df: DataFrame):
         df_copy = df.copy()        
@@ -296,11 +293,11 @@ class GeneralStatisticsFrame(ScrolledFrame):
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_shots_on_pc"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_shots_on_pc"])
         
-        return self.build_role_line_graphs(filtered_df, "rolling_shots_on_pc", "Rolling shots on / 90")
+        return self.build_line_graph(filtered_df, "rolling_shots_on_pc", "Shots on / 90", "Rolling shots on / 90")
     
     def get_dribbles_success_growth_figures(self, df: DataFrame):
         df_copy = df.copy()
-        
+
         df_copy['dribbles_success'] = (df_copy['dribbles.success'] / df_copy['dribbles.attempts'])*100
         
         df_copy["rolling_dribbles_success"] = (
@@ -313,7 +310,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_dribbles_success"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_dribbles_success"])
         
-        return self.build_role_line_graphs(filtered_df, "rolling_dribbles_success", "Rolling Dribbles success %")
+        return self.build_line_graph(filtered_df, "rolling_dribbles_success", "Dribbles success %", "Rolling Dribbles success %")
     
     def get_passes_success_pc_growth_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -330,7 +327,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_passes_success"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_passes_success"])
         
-        return self.build_role_line_graphs(filtered_df, "rolling_passes_success", "Rolling passes success %")
+        return self.build_line_graph(filtered_df, "rolling_passes_success", "Passes success %", "Rolling passes success %")
     
     def get_duels_won_pc_growth_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -347,23 +344,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_duels_won_pc"].mean().reset_index()
         filtered_df = groups_df.dropna(subset=["rolling_duels_won_pc"])
         
-        return self.build_role_line_graphs(filtered_df, "rolling_duels_won_pc", "Rolling Duels won %")
-    
-    def build_role_line_graphs(self, df: DataFrame, field, ylabel):# -> list:
-        roles = df["role_group"].dropna().unique()
-        
-        graphs = {}
-        role_labels = {
-            "att": "Attackers",
-            "mid": "Midfielders",
-            "def": "Defenders"
-        }
-        for role in roles:
-            role_df = df[df["role_group"] == role]
-            role_title = role_labels[role].capitalize()
-            graphs[role] = self.build_line_graph(role_df, field, role_title, ylabel)
-            
-        return graphs
+        return self.build_line_graph(filtered_df, "rolling_duels_won_pc", "Duels won %", "Rolling Duels won %")
     
     def build_line_graph(
         self,
@@ -398,24 +379,12 @@ class GeneralStatisticsFrame(ScrolledFrame):
         
         return figure
     
-    def build_role_lineair_regress_graphs(self, df, y, axis_labels):
-        roles = df["role_group"].dropna().unique()
-        
-        graphs = {}
-        for role in roles:
-            df_role = df[df["role_group"] == role]
-            
-            graphs[role] = self.build_lineair_regress_graph(df_role, y, axis_labels)
-        
-        return graphs
-    
-    def build_lineair_regress_graph(self, df, y, axis_labels) -> plt.Figure:
+    def build_lineair_regress_graph(self, df, y, title, axis_labels) -> plt.Figure:
         g = sns.lmplot(
             data=df,
             x="match_index",
             y=y,
             hue="type_player",
-            col="role_group",
             height=3,
             aspect=1.33,
             scatter_kws={"s": 10, "alpha": 0.5},
@@ -425,19 +394,12 @@ class GeneralStatisticsFrame(ScrolledFrame):
         )
 
         g.set_axis_labels("Match Index", axis_labels)
+
         
-        role_labels = {
-            "att": "Attackers",
-            "mid": "Midfielders",
-            "def": "Defenders"
-        }
-
-        for ax in g.axes.flat:
-            role_key = ax.get_title().split(" = ")[-1]
-            ax.set_title(role_labels.get(role_key, role_key))
-
+        plt.title(title)
         plt.tight_layout()
         fig = g.figure
+        
         plt.close(fig)
         
         return fig
