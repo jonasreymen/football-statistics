@@ -74,6 +74,9 @@ class GeneralStatisticsFrame(ScrolledFrame):
         frame.grid_rowconfigure(0, weight=0)
         frame.grid_rowconfigure(1, weight=1)
         
+        # initiate first load
+        self.filter_statistics(statistics_frame, df, type_string, role_group_string)
+        
         return frame
     
     def filter_statistics(self, parent: ttk.Frame, df: DataFrame, type_string: ttk.StringVar, role_group_string: ttk.StringVar):
@@ -140,39 +143,6 @@ class GeneralStatisticsFrame(ScrolledFrame):
         duels_won_pc_growth_frame = self.get_duels_won_pc_growth_figures(df)
         
         return self.build_matching_frame_blocks(parent, duels_won_pc_growth_frame, cumulative_duels_won_pc_percentage_frame)
-
-    def get_goals_per_90_growth_figures(self, df: DataFrame):# -> dict:
-        df_copy = df.copy()
-        
-        df_copy['gpm'] = df_copy['goals.total'] / df_copy['games.minutes']
-        df_copy['gp90'] = df_copy['gpm']*90
-        
-        df_copy["rolling_gpm"] = (
-            df_copy.groupby("player_id")["gp90"]
-                .rolling(window=5, min_periods=1)
-                .mean()
-                .reset_index(level=0, drop=True)
-        )
-        
-        groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_gpm"].mean().reset_index()
-        filtered_df = groups_df.dropna(subset=["rolling_gpm"])
-        
-        return self.build_line_graph(filtered_df, "rolling_gpm", "Goals / 90", "Rolling goals / 90")
-    
-    def get_shots_per_90_growth_figures(self, df: DataFrame):
-        df_copy = df.copy()
-        df_copy['shots_per_90'] = (df_copy['shots.total']/df_copy['games.minutes'])*90
-        
-        df_copy["rolling_shots_per_90"] = (
-            df_copy.groupby("player_id")["shots_per_90"]
-                .rolling(window=5, min_periods=5)
-                .mean()
-                .reset_index(level=0, drop=True)
-        )
-        groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_shots_per_90"].mean().reset_index()
-        filtered_df = groups_df.dropna(subset=["rolling_shots_per_90"])
-        
-        return self.build_line_graph(filtered_df, "rolling_shots_per_90", "Shots / 90", "Rolling shots / 90")
     
     def get_cumulative_shots_on_pc_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -261,6 +231,39 @@ class GeneralStatisticsFrame(ScrolledFrame):
         df_copy['match_index'] = grouped_df.cumcount()
         
         return self.build_lineair_regress_graph(df_copy, "cumulative_shots_on_per_90", "Shots on / 90", "Cumulative shots on / 90")
+    
+    def get_goals_per_90_growth_figures(self, df: DataFrame):# -> dict:
+        df_copy = df.copy()
+        
+        df_copy['gpm'] = df_copy['goals.total'] / df_copy['games.minutes']
+        df_copy['gp90'] = df_copy['gpm']*90
+        
+        df_copy["rolling_gpm"] = (
+            df_copy.groupby("player_id")["gp90"]
+                .rolling(window=5, min_periods=1)
+                .mean()
+                .reset_index(level=0, drop=True)
+        )
+        
+        groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_gpm"].mean().reset_index()
+        filtered_df = groups_df.dropna(subset=["rolling_gpm"])
+        
+        return self.build_line_graph(filtered_df, "rolling_gpm", "Goals / 90", "Rolling goals / 90")
+    
+    def get_shots_per_90_growth_figures(self, df: DataFrame):
+        df_copy = df.copy()
+        df_copy['shots_per_90'] = (df_copy['shots.total']/df_copy['games.minutes'])*90
+        
+        df_copy["rolling_shots_per_90"] = (
+            df_copy.groupby("player_id")["shots_per_90"]
+                .rolling(window=5, min_periods=5)
+                .mean()
+                .reset_index(level=0, drop=True)
+        )
+        groups_df = df_copy.groupby(['role_group', 'type_player', 'fixture_date'])["rolling_shots_per_90"].mean().reset_index()
+        filtered_df = groups_df.dropna(subset=["rolling_shots_per_90"])
+        
+        return self.build_line_graph(filtered_df, "rolling_shots_per_90", "Shots / 90", "Rolling shots / 90")
     
     def get_shots_on_pc_growth_figures(self, df: DataFrame):
         df_copy = df.copy()
@@ -356,7 +359,7 @@ class GeneralStatisticsFrame(ScrolledFrame):
         x="fixture_date",
         hue="type_player"
     ) -> ttk.Canvas:
-        figure = plt.figure(figsize=(4, 3), dpi=100)
+        figure = plt.figure(figsize=(4, 5), dpi=100)
         
         sns.lineplot(
             data=df,
@@ -385,8 +388,8 @@ class GeneralStatisticsFrame(ScrolledFrame):
             x="match_index",
             y=y,
             hue="type_player",
-            height=3,
-            aspect=1.33,
+            height=5,
+            aspect=0.8,
             scatter_kws={"s": 10, "alpha": 0.5},
             ci=None,
             palette=self.colors,

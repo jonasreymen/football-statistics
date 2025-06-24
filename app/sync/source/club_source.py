@@ -1,6 +1,5 @@
 from app.models.models import CompetitionSeason
 from app.sync.source.api_sports_source import ApiSportsSource
-from apisports_football import Wrapper
 from sqlalchemy.orm.session import Session
 
 class ClubSource(ApiSportsSource):

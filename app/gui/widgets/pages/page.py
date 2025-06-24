@@ -8,6 +8,9 @@ class Page(ttk.Frame, PageInterface, ABC):
         self.name = name
         self.is_build = False
         self.force_reload = False
+        
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
     
     @abstractmethod
     def build(self, data: dict = {}) -> None:

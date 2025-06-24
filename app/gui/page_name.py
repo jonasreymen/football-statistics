@@ -6,3 +6,6 @@ class PageName(StrEnum):
     COMPARISON_STATISTIC_DETAIL_PAGE: str = "comparison_statistic_detail_page"
     GENERAL_STATISTIC_PAGE: str = "general_statistic_page"
     SYNCHRONISATION_PAGE: str = "sync_page"
+    
+    # info pages
+    INFORMATION_PAGE: str = "information_page"

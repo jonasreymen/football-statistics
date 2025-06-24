@@ -1,6 +1,6 @@
 from app.controllers.SynchronisationHandler import SynchronizationHandler
 from app.gui.page_name import PageName
-from app.gui.widgets.page import Page
+from app.gui.widgets.pages.page import Page
 import ttkbootstrap as ttk
 import sys
 import threading
@@ -30,7 +30,6 @@ class SyncPage(Page):
         frame.grid_columnconfigure(0, weight=1)
         
         self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
         
         frame.grid(column=0, row=0,padx=10, pady=10, sticky="nsew")
         

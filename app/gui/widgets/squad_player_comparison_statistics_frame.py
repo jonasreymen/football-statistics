@@ -174,7 +174,7 @@ class SquadPlayerComparisonStatisticsFrame(ScrolledFrame):
         )
         
     def build_figure(self, df: DataFrame, field: str, title, field_name: str) -> plt.Figure:
-        fig, ax = plt.subplots(figsize=(3, 4))
+        fig, ax = plt.subplots(figsize=(4, 7))
 
         for name, group in df.groupby("name"):
             ax.plot(group["block"], group[field], marker="o", label=name)

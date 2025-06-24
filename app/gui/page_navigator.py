@@ -1,5 +1,5 @@
 from app.gui.page_navigator_interface import PageNavigatorInterface
-from app.gui.widgets.page import Page
+from app.gui.widgets.pages.page import Page
 
 class PageNavigator(PageNavigatorInterface):
     pages: dict[str, Page] = {}

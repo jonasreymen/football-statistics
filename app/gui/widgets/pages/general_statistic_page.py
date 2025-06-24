@@ -1,6 +1,6 @@
 from app.gui.page_name import PageName
 from app.gui.widgets.general_statistics_frame import GeneralStatisticsFrame
-from app.gui.widgets.page import Page
+from app.gui.widgets.pages.page import Page
 import ttkbootstrap as ttk
 from app.utils.statistics_data_provider import StatisticsDataProvider
 

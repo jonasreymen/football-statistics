@@ -10,7 +10,7 @@ class FixturePlayerStatisticMapper(ObjectMapper):
         fixture_player_statistic = FixturePlayerStatistic()
         fixture_player_statistic.fixture_club_participation = raw_data["fixture_club_participation"]
         fixture_player_statistic.statistic_type = self.get_statistic_type(raw_data["statistic_type"])
-        fixture_player_statistic.value = raw_data["value"]
+        fixture_player_statistic.value = float(raw_data["value"])
         fixture_player_statistic.squad_player = self.get_squad_player(raw_data["player"], raw_data["fixture_club_participation"])
         
         return fixture_player_statistic

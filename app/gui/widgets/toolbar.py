@@ -15,6 +15,13 @@ class ToolbarBuilder():
         NavigatingButton(
             self.root,
             self.page_navigator,
+            PageName.INFORMATION_PAGE.value,
+            text="Information"
+        ).grid(sticky="nsew", pady=10, padx=10)
+        
+        NavigatingButton(
+            self.root,
+            self.page_navigator,
             PageName.SYNCHRONISATION_PAGE.value,
             text="Synchronization"
         ).grid(sticky="nsew", pady=10, padx=10)

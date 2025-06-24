@@ -1,7 +1,7 @@
 from typing import List
 from app.gui.page_name import PageName
 from app.gui.page_navigator_interface import PageNavigatorInterface
-from app.gui.widgets.page import Page
+from app.gui.widgets.pages.page import Page
 import ttkbootstrap as ttk
 from sqlalchemy.orm.session import Session
 

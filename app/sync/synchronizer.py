@@ -17,11 +17,11 @@ class Synchronizer:
             merger: Merger
         ) -> None:
         self.name = name
-        self.source = source
-        self.mapper = mapper
-        self.locator = locator
-        self.storage = storage
-        self.merger = merger
+        self.source: Source = source
+        self.mapper: ObjectMapper = mapper
+        self.locator: Locator = locator
+        self.storage: Storage = storage
+        self.merger: Merger = merger
         self.to_insert: List[object] = []
         self.to_update: List[object] = []
 
@@ -40,9 +40,9 @@ class Synchronizer:
             else:
                 self.to_insert.append(new_obj)
         
-        self.apply_changes()
+        self.__apply_changes()
 
-    def apply_changes(self) -> None:
+    def __apply_changes(self) -> None:
         print(f"💾 Applying DB changes for: {self.name}")
         for obj in tqdm(self.to_update, desc=f"[{self.name}] Updating", unit="obj"):
             self.storage.update(obj)
